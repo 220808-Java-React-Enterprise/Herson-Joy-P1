@@ -56,7 +56,11 @@ public class UserServlet extends HttpServlet {
     }
 
     @Override
+<<<<<<< HEAD
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {//git
+=======
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+>>>>>>> 1158f3957495e454ec8325e194be61fd951408bf
         String token = req.getHeader("Authorization");
         Principal principal = tokenService.extractRequesterDetails(token);
 
