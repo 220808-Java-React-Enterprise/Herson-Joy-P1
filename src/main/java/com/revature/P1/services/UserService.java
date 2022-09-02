@@ -21,12 +21,18 @@ public class UserService {
 
     public User register(NewUserRequest request) {
         User user = null;
+        user = new User(UUID.randomUUID().toString(), request.getUsername(), request.getPassword1(), request.getRole());
+        userDAO.save(user);
 
         if (isValidUsername(request.getUsername())) {
             if (!isDuplicateUsername(request.getUsername())) {
                 if (isValidPassword(request.getPassword1())) {
-                    if (isSamePassword(request.getPassword1(), request.getPassword2())) {
+                    if (isSamePassword(request.getPassword1(), request.getPassword1())) {
                         user = new User(UUID.randomUUID().toString(), request.getUsername(), request.getPassword1());
+                        user.setId(UUID.randomUUID().toString());
+                        user.setUsername(request.getUsername());
+                        user.setPassword(request.getPassword1());
+                        //user.setRole()
                         userDAO.save(user);
                     }
                 }

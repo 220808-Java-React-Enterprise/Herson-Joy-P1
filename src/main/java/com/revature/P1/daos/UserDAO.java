@@ -15,8 +15,10 @@ public class UserDAO implements CrudDAO<User> {
 
     @Override
     public void save(User obj) {
+        User user = new User(obj.getId(), obj.getUsername(), obj.getPassword(), obj.getRole());
+        System.out.println(user);
         try (Connection con = ConnectionFactory.getInstance().getConnection()) {
-            PreparedStatement ps = con.prepareStatement("INSERT INTO users (id, username, password, role) VALUES (?, ?, ?, ?)");
+            PreparedStatement ps = con.prepareStatement("insert into users (id, username, password, role) values(?, ?, ?, ?)");
             ps.setString(1, obj.getId());
             ps.setString(2, obj.getUsername());
             ps.setString(3, obj.getPassword());

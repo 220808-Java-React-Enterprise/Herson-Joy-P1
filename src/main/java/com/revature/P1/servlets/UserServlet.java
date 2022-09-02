@@ -10,6 +10,7 @@ import com.revature.P1.utils.custom_exceptions.InvalidRequestException;
 import com.revature.P1.utils.custom_exceptions.ResourceConflictException;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,18 +35,14 @@ public class UserServlet extends HttpServlet {
             /* mapper obj convert JSON request and store into into a NewUserRequest.class */
             NewUserRequest request = mapper.readValue(req.getInputStream(), NewUserRequest.class);
 
-            String[] path = req.getRequestURI().split("/");
 
-            if (path[3].equals("signup")) {
-                User createdUser = userService.register(request);
+            User createdUser = userService.register(request);
 
-                resp.setStatus(200); // CREATED
-                resp.setContentType("application/json");
-                resp.getWriter().write(mapper.writeValueAsString(createdUser.getId()));
-            } else {
-                System.out.println("NO");
-            }
-        } catch (InvalidRequestException e) {
+            resp.setStatus(200); // CREATED
+            resp.setContentType("application/json");
+            resp.getWriter().write(mapper.writeValueAsString(createdUser.getId()));
+        }
+        catch (InvalidRequestException e) {
             resp.setStatus(404); // BAD REQUEST
             resp.getWriter().write(mapper.writeValueAsString(e.getMessage()));
         } catch (ResourceConflictException e) {
@@ -53,14 +50,11 @@ public class UserServlet extends HttpServlet {
         } catch (Exception e) {
             resp.setStatus(404); // BAD REQUEST
         }
+
     }
 
     @Override
-<<<<<<< HEAD
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {//git
-=======
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
->>>>>>> 1158f3957495e454ec8325e194be61fd951408bf
         String token = req.getHeader("Authorization");
         Principal principal = tokenService.extractRequesterDetails(token);
 
