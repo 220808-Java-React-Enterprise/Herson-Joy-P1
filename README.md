@@ -40,11 +40,11 @@ Reimbursements are to be one of the following types:
 
 - An new employee or new finance manager can request registration with the system
 - An admin user can approve or deny new registration requests
-- The system will register the user's information for payment processing
+- // The system will register the user's information for payment processing
 - A registered employee can authenticate with the system by providing valid credentials
 - An authenticated employee can view and manage their pending reimbursement requests
 - An authenticated employee can view their reimbursement request history (sortable and filterable)
-- An authenticated employee can submit a new reimbursement request
+- 222 An authenticated employee can submit a new reimbursement request
 - An authenticated finance manager can view a list of all pending reimbursement requests
 - An authenticated finance manager can view a history of requests that they have approved/denied
 - An authenticated finance manager can approve/deny reimbursement requests
@@ -60,9 +60,9 @@ Reimbursements are to be one of the following types:
 - Sensitive endpoints are protected from unauthenticated and unauthorized requesters using JWTs
 - Errors and exceptions are handled properly and their details are obfuscated from the user
 - The system conforms to RESTful architecture constraints
-- The system's is tested with at least 80% line coverage in all service and utility classes
-- The system's data schema and component design is documented and diagrammed
-- The system keeps detailed logs on info, error, and fatal events that occur
+- The system's is tested with at least 50% line coverage in all service and utility classes
+- //The system's data schema and component design is documented and diagrammed
+- //The system keeps detailed logs on info, error, and fatal events that occur
 
 ### Suggested Bonus Features
 - Authenticated employees are able to upload an receipt image along with their reimbursement request
