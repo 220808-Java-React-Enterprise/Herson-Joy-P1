@@ -20,26 +20,27 @@ public class UserService {
     }
 
     public User register(NewUserRequest request) {
-        User user = null;
+        //userDAO.save(user);
 
         if (isValidUsername(request.getUsername())) {
             if (!isDuplicateUsername(request.getUsername())) {
                 if (isValidPassword(request.getPassword1())) {
                     if (isSamePassword(request.getPassword1(), request.getPassword2())) {
-                        user = new User(UUID.randomUUID().toString(), request.getUsername(), request.getPassword1());
+                        User user = new User(request.getUsername(), request.getPassword1(), request.getEmail(), request.getGiven_name(), request.getSurname());
+                        user.setUser_id(request.getId());
                         userDAO.save(user);
+                        return user;
                     }
                 }
             }
         }
-
-        return user;
+        return null;
     }
 
     public Principal login(LoginRequest request) {
         User user = userDAO.getUserByUsernameAndPassword(request.getUsername(), request.getPassword());
         if (user == null) throw new AuthenticationException("\nIncorrect username or password :(");
-        return new Principal(user.getId(), user.getUsername(), user.getRole());
+        return new Principal(user.getUser_id(), user.getUsername(), user.getRole_id());
     }
 
     public User getUserById(String id) {

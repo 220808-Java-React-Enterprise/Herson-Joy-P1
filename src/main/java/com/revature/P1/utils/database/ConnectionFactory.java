@@ -22,11 +22,12 @@ public class ConnectionFactory {
     private final Properties props = new Properties();
 
     private ConnectionFactory() {
-        try {
-            props.load(new FileReader("src/main/resources/db.properties"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            props.load(new FileReader("db.properties"));
+//            System.out.println(props.getProperty("url"));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public static ConnectionFactory getInstance() {
@@ -35,8 +36,15 @@ public class ConnectionFactory {
     }
 
     public Connection getConnection() throws SQLException {
-        Connection conn = DriverManager.getConnection(props.getProperty("url"), props.getProperty("username"), props.getProperty("password"));
+        String url = "jdbc:postgresql://p1-database-1.c6nbfc7sxlvy.us-east-2.rds.amazonaws.com:5432/postgres?currentSchema=p1";
+        String username = "postgres";
+        String password = "revature";
+
+
+        //Connection conn = DriverManager.getConnection(props.getProperty("url"), props.getProperty("username"), props.getProperty("password"));
+        Connection conn = DriverManager.getConnection(url,username,password);
         if (conn == null) throw new RuntimeException("Could not establish connection with the database!");
+        System.out.println("connect success");
         return conn;
     }
 }

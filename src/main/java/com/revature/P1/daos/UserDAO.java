@@ -16,13 +16,18 @@ public class UserDAO implements CrudDAO<User> {
     @Override
     public void save(User obj) {
         try (Connection con = ConnectionFactory.getInstance().getConnection()) {
-            PreparedStatement ps = con.prepareStatement("INSERT INTO users (id, username, password, role) VALUES (?, ?, ?, ?)");
-            ps.setString(1, obj.getId());
+            PreparedStatement ps = con.prepareStatement("insert into ers_users (user_id, username, email, password, given_name, surname, role_id) values (?, ?, ?, ?, ?, ?, ?)");
+            ps.setString(1, obj.getUser_id());
             ps.setString(2, obj.getUsername());
-            ps.setString(3, obj.getPassword());
-            ps.setString(4, obj.getRole());
+            ps.setString(3, obj.getEmail());
+            ps.setString(4, obj.getPassword());
+            ps.setString(5, obj.getGiven_name());
+            ps.setString(6, obj.getSurname());
+            ps.setString(7, obj.getRole_id());
             ps.executeUpdate();
+            ps.close();
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new InvalidSQLException("An error occurred when tyring to save to the database.");
         }
     }
@@ -40,12 +45,12 @@ public class UserDAO implements CrudDAO<User> {
     @Override
     public User getById(String id) {
         try (Connection con = ConnectionFactory.getInstance().getConnection()) {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM users WHERE id = ?");
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM ers_users WHERE id = ?");
             ps.setString(1, id);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                return new User(rs.getString("id"), rs.getString("username"), rs.getString("password"), rs.getString("role"));
+                return new User(rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("given_name"), rs.getString("surname"), rs.getString("user_id"));
             }
 
         } catch (SQLException e) {
@@ -57,12 +62,12 @@ public class UserDAO implements CrudDAO<User> {
 
     public User getUserByUsername(String username) {
         try (Connection con = ConnectionFactory.getInstance().getConnection()) {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM users WHERE username = ?");
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM ers_users WHERE username = ?");
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                return new User(rs.getString("id"), rs.getString("username"), rs.getString("password"), rs.getString("role"));
+                return new User(rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("given_name"), rs.getString("surname"), rs.getString("user_id"));
             }
 
         } catch (SQLException e) {
@@ -78,11 +83,11 @@ public class UserDAO implements CrudDAO<User> {
         List<User> userList = new ArrayList<>();
 
         try (Connection con = ConnectionFactory.getInstance().getConnection()) {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM users");
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM ers_users");
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                User user = new User(rs.getString("id"), rs.getString("username"), rs.getString("password"), rs.getString("role"));
+                User user = new User(rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("given_name"), rs.getString("surname"), rs.getString("user_id"));
                 userList.add(user);
             }
 
@@ -95,7 +100,7 @@ public class UserDAO implements CrudDAO<User> {
 
     public String getUsername(String username) {
         try (Connection con = ConnectionFactory.getInstance().getConnection()) {
-            PreparedStatement ps = con.prepareStatement("SELECT (username) FROM users WHERE username = ?");
+            PreparedStatement ps = con.prepareStatement("SELECT (username) FROM ers_users WHERE username = ?");
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
 
@@ -110,13 +115,13 @@ public class UserDAO implements CrudDAO<User> {
 
     public User getUserByUsernameAndPassword(String username, String password) {
         try (Connection con = ConnectionFactory.getInstance().getConnection()) {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM users WHERE username = ? AND password = ?");
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM ers_users WHERE username = ? AND password = ?");
             ps.setString(1, username);
             ps.setString(2, password);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next())
-                return new User(rs.getString("id"), rs.getString("username"), rs.getString("password"), rs.getString("role"));
+                return new User(rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("given_name"), rs.getString("surname"), rs.getString("user_id"));
         } catch (SQLException e) {
             throw new InvalidSQLException("An error occurred when tyring to save to the database.");
         }

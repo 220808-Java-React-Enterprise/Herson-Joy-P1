@@ -23,7 +23,7 @@ public class TokenService {
         long now = System.currentTimeMillis();
         JwtBuilder tokenBuilder = Jwts.builder()
                 .setId(subject.getId())
-                .setIssuer("yolp")
+                .setIssuer("P1")
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + jwtConfig.getExpiration()))
                 .setSubject(subject.getUsername())
