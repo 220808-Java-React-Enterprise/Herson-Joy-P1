@@ -50,7 +50,7 @@ public class UserDAO implements CrudDAO<User> {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                return new User(rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("given_name"), rs.getString("surname"), rs.getString("user_id"));
+                return new User(rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("given_name"), rs.getString("surname"), rs.getString("user_id"), rs.getString("role_id"));
             }
 
         } catch (SQLException e) {
@@ -67,7 +67,7 @@ public class UserDAO implements CrudDAO<User> {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                return new User(rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("given_name"), rs.getString("surname"), rs.getString("user_id"));
+                return new User(rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("given_name"), rs.getString("surname"), rs.getString("user_id"), rs.getString("role_id"));
             }
 
         } catch (SQLException e) {
@@ -87,7 +87,7 @@ public class UserDAO implements CrudDAO<User> {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                User user = new User(rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("given_name"), rs.getString("surname"), rs.getString("user_id"));
+                User user = new User(rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("given_name"), rs.getString("surname"), rs.getString("user_id"), rs.getString("role_id"));
                 userList.add(user);
             }
 
@@ -121,11 +121,56 @@ public class UserDAO implements CrudDAO<User> {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next())
-                return new User(rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("given_name"), rs.getString("surname"), rs.getString("user_id"));
+                return new User(rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("given_name"), rs.getString("surname"), rs.getString("user_id"), rs.getBoolean("is_active"), rs.getString("role_id"));
         } catch (SQLException e) {
             throw new InvalidSQLException("An error occurred when tyring to save to the database.");
         }
 
         return null;
+    }
+
+    public int setIsActiveForUser(String username, boolean is_active) {
+        try (Connection con = ConnectionFactory.getInstance().getConnection()) {
+            PreparedStatement ps = con.prepareStatement("UPDATE ers_users SET is_active = ? WHERE username = ?");
+            ps.setBoolean(1, is_active);
+            ps.setString(2, username);
+            int rows = ps.executeUpdate();
+            return rows;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new InvalidSQLException("An error occurred when tyring to save to the database.");
+        }
+    }
+
+    public List<User> getAllByRoleId(String role_id) {
+        List<User> userList = new ArrayList<>();
+
+        try (Connection con = ConnectionFactory.getInstance().getConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM ers_users WHERE role_id = ?");
+            ps.setString(1, role_id);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                User user = new User(rs.getString("username"), rs.getString("password"), rs.getString("email"), rs.getString("given_name"), rs.getString("surname"), rs.getString("user_id"), rs.getString("role_id"));
+                userList.add(user);
+            }
+
+        } catch (SQLException e) {
+            throw new InvalidSQLException("An error occurred when tyring to save to the database.");
+        }
+
+        return userList;
+    }
+
+    public void setRoleIdForUser(String username, String role_id) {
+        try (Connection con = ConnectionFactory.getInstance().getConnection()) {
+            PreparedStatement ps = con.prepareStatement("UPDATE ers_users SET role_id = ? WHERE username = ?");
+            ps.setString(1, role_id);
+            ps.setString(2, username);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new InvalidSQLException("An error occurred when tyring to save to the database.");
+        }
     }
 }

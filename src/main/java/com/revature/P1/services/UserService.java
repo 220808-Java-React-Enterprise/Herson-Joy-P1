@@ -7,6 +7,7 @@ import com.revature.P1.dtos.responses.Principal;
 import com.revature.P1.models.User;
 import com.revature.P1.utils.custom_exceptions.AuthenticationException;
 import com.revature.P1.utils.custom_exceptions.InvalidRequestException;
+import com.revature.P1.utils.custom_exceptions.RegistrationPendingException;
 import com.revature.P1.utils.custom_exceptions.ResourceConflictException;
 
 import java.util.List;
@@ -40,6 +41,7 @@ public class UserService {
     public Principal login(LoginRequest request) {
         User user = userDAO.getUserByUsernameAndPassword(request.getUsername(), request.getPassword());
         if (user == null) throw new AuthenticationException("\nIncorrect username or password :(");
+        if(user.getRole_id().equals("400")) throw new RegistrationPendingException("\nAn Admin has not approved your registration :(");
         return new Principal(user.getUser_id(), user.getUsername(), user.getRole_id());
     }
 
@@ -74,5 +76,17 @@ public class UserService {
     public boolean isSamePassword(String password, String password2) {
         if (!password.equals(password2)) throw new InvalidRequestException("\nPassword do not match :(");
         return true;
+    }
+
+    public int setIsActiveForUser(String username, boolean is_active) {
+        return userDAO.setIsActiveForUser(username, is_active);
+    }
+
+    public List<User> getAllUsersByRoleId(String role_id) {
+        return userDAO.getAllByRoleId(role_id);
+    }
+
+    public void setRoleIdForUser(String username, String role_id) {
+        userDAO.setRoleIdForUser(username, role_id);
     }
 }

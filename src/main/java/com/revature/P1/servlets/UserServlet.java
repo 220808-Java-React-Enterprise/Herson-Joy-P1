@@ -25,6 +25,7 @@ public class UserServlet extends HttpServlet {
 
     public UserServlet(ObjectMapper mapper, TokenService tokenService, UserService userService) {
         this.mapper = mapper;
+        mapper.findAndRegisterModules();
         this.tokenService = tokenService;
         this.userService = userService;
     }
@@ -63,13 +64,28 @@ public class UserServlet extends HttpServlet {
         Principal principal = tokenService.extractRequesterDetails(token);
 
         try {
-            if (principal.getRole().equals("ADMIN")) {
+            if (principal.getRole().equals("300")) {
                 String username = req.getParameter("username");
+                String role_id = req.getParameter("role_id");
+                String change_role = req.getParameter("change_role");
 
                 resp.setContentType("application/json");
                 if (username != null) {
+                    if(change_role != null){
+                        userService.setRoleIdForUser(username, change_role);
+                    }
                     resp.getWriter().write(mapper.writeValueAsString(userService.getUserByUsername(username)));
-                } else {
+                } else if(role_id != null){
+                    //boolean is_active_boolean = Boolean.parseBoolean(is_active);
+                    //System.out.println(is_active);
+                    //System.out.println(is_active_boolean);
+                    //int rows = userService.setIsActiveForUser(username, is_active_boolean);
+                    //resp.getWriter().write(rows);
+
+                    List<User> userList = userService.getAllUsersByRoleId(role_id);
+                    resp.getWriter().write(mapper.writeValueAsString(userList));
+                }
+                else {
                     List<User> userList = userService.getAllUsers();
                     resp.getWriter().write(mapper.writeValueAsString(userList));
                 }

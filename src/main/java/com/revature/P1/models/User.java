@@ -4,10 +4,11 @@ public class User {
     private String user_id;
     private String username;
     private String password;
-    private String role_id = "100";
+    private String role_id = "400";
     private String email;
     private String given_name;
     private String surname;
+    private boolean is_active;
 
     public User(String username, String password, String email, String given_name, String surname) {
         this.username = username;
@@ -17,13 +18,25 @@ public class User {
         this.surname = surname;
     }
 
-    public User(String username, String password, String email, String given_name, String surname, String user_id) {
+    public User(String username, String password, String email, String given_name, String surname, String user_id, String role_id) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.given_name = given_name;
         this.surname = surname;
         this.user_id = user_id;
+        this.role_id = role_id;
+    }
+
+    public User(String username, String password, String email, String given_name, String surname, String user_id, boolean is_active, String role_id) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.given_name = given_name;
+        this.surname = surname;
+        this.user_id = user_id;
+        this.is_active = is_active;
+        this.role_id = role_id;
     }
 
     @Override
@@ -37,6 +50,14 @@ public class User {
                 ", given_name='" + given_name + '\'' +
                 ", surname='" + surname + '\'' +
                 '}';
+    }
+
+    public boolean getIs_active() {
+        return is_active;
+    }
+
+    public void setIs_active(boolean is_active) {
+        this.is_active = is_active;
     }
 
     public String getUser_id() {

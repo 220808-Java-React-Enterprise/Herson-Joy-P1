@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOError;
 import java.io.IOException;
+import java.util.List;
 
 public class ReimbursementServlet extends HttpServlet {
     private final ObjectMapper mapper;
@@ -42,15 +43,12 @@ public class ReimbursementServlet extends HttpServlet {
                 Reimbursement reimbursement = reimbursementService.saveReimbursement(reimbursementRequest);
                 resp.setStatus(200);
 
-                System.out.println(reimbursement);
+                //System.out.println(reimbursement);
 
                 resp.setContentType("application/json");
                 resp.getWriter().write(mapper.writeValueAsString(reimbursement.getReimb_id()));
 
             }
-
-
-
 
         } catch (InvalidRequestException e){
             resp.setStatus(404);
@@ -59,6 +57,87 @@ public class ReimbursementServlet extends HttpServlet {
         } catch (NullPointerException e){
             resp.setStatus(401);
         }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
+        String token = req.getHeader("Authorization");
+        Principal principal = tokenService.extractRequesterDetails(token);
+
+        try{
+            if(principal.getRole().equals("100")) { //DEFAULT
+                String date = req.getParameter("date");
+                String sort = req.getParameter("sort");
+                String status = req.getParameter("status");
+
+                String reimb_id = req.getParameter("reimb_id");
+                String change_amount = req.getParameter("change_amount");
+                String change_decription = req.getParameter("change_description");
+                String change_type = req.getParameter("change_type");
+
+                if(reimb_id != null) {
+                    if (change_amount != null) {
+                        reimbursementService.setAmountForReimbursement(reimb_id, change_amount);
+                    }
+                    if(change_decription != null){
+                        reimbursementService.setDecriptionForReimbursement(reimb_id, change_decription);
+                    }
+                    if(change_type != null){
+                        reimbursementService.setTypeForReimbursement(reimb_id, change_type);
+                    }
+                }
+
+                resp.setContentType("application/json");
+
+                List<Reimbursement> reimbursementList = null;
+                if(date == null){
+                    if(sort == null) {
+                        if(status == null) {
+                            reimbursementList = reimbursementService.getAllByAuthor(principal.getId());
+                        }
+                        else{
+                            reimbursementList = reimbursementService.getAllByAuthorAndStatus(principal.getId(), status);
+                        }
+                    }
+                    else{
+                        if(status == null) {
+                            reimbursementList = reimbursementService.getAllByAuthorAndSort(principal.getId(), sort);
+                        }
+                        else{
+                            reimbursementList = reimbursementService.getAllByAuthorAndStatusAndSort(principal.getId(), status, sort);
+                        }
+                    }
+                }
+                else{
+                    if(sort == null) {
+                        if(status == null){
+                            reimbursementList = reimbursementService.getAllByAuthorAndDate(principal.getId(), date);
+                        }
+                        else{
+                            reimbursementList =reimbursementService.getAllByAuthorAndDateAndStatus(principal.getId(), date, status);
+                        }
+                    }
+                    else{
+                        if(status == null){
+                            reimbursementList = reimbursementService.getAllByAuthorAndSortAndDate(principal.getId(), sort, date);
+                        }
+                        else{
+                            reimbursementList =reimbursementService.getAllByAuthorAndSortAndDateAndStatus(principal.getId(), sort, date, status);
+                        }
+
+                    }
+                }
+
+                resp.getWriter().write(mapper.writeValueAsString(reimbursementList));
+
+            }
+
+        } catch (NullPointerException e) {
+            resp.setStatus(401); // UNAUTHORIZED
+        } catch (InvalidRequestException e) {
+            resp.setStatus(404);
+        }
+
     }
 
 
