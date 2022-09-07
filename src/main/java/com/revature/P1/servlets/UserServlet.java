@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 public class UserServlet extends HttpServlet {
     private final ObjectMapper mapper;
@@ -35,18 +36,21 @@ public class UserServlet extends HttpServlet {
             /* mapper obj convert JSON request and store into into a NewUserRequest.class */
             NewUserRequest request = mapper.readValue(req.getInputStream(), NewUserRequest.class);
 
+            //System.out.println(request.getId());
 
+            request.setId(UUID.randomUUID().toString());
             User createdUser = userService.register(request);
 
             resp.setStatus(200); // CREATED
             resp.setContentType("application/json");
-            resp.getWriter().write(mapper.writeValueAsString(createdUser.getId()));
+            resp.getWriter().write(mapper.writeValueAsString(createdUser.getUser_id()));
         }
         catch (InvalidRequestException e) {
             resp.setStatus(404); // BAD REQUEST
             resp.getWriter().write(mapper.writeValueAsString(e.getMessage()));
         } catch (ResourceConflictException e) {
             resp.setStatus(409); // CONFLICT
+            e.printStackTrace();
         } catch (Exception e) {
             resp.setStatus(404); // BAD REQUEST
         }
