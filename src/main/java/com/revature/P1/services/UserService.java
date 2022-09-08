@@ -10,6 +10,8 @@ import com.revature.P1.utils.custom_exceptions.InvalidRequestException;
 import com.revature.P1.utils.custom_exceptions.RegistrationPendingException;
 import com.revature.P1.utils.custom_exceptions.ResourceConflictException;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,10 +26,11 @@ public class UserService {
         //userDAO.save(user);
 
         if (isValidUsername(request.getUsername())) {
-            if (!isDuplicateUsername(request.getUsername())) {
+            if (!isDuplicateUsername(request.getUsername()) && !isDuplicateEmail(request.getEmail())) {
                 if (isValidPassword(request.getPassword1())) {
                     if (isSamePassword(request.getPassword1(), request.getPassword2())) {
-                        User user = new User(request.getUsername(), request.getPassword1(), request.getEmail(), request.getGiven_name(), request.getSurname());
+                        String password = MD5HashPassword(request.getPassword1());
+                        User user = new User(request.getUsername(), password, request.getEmail(), request.getGiven_name(), request.getSurname());
                         user.setUser_id(request.getId());
                         userDAO.save(user);
                         return user;
@@ -38,8 +41,14 @@ public class UserService {
         return null;
     }
 
+    private boolean isDuplicateEmail(String email) {
+        if (userDAO.getEmail(email) != null) throw new ResourceConflictException("\nSorry, " + email + " already been used :(");
+        return false;
+    }
+
     public Principal login(LoginRequest request) {
-        User user = userDAO.getUserByUsernameAndPassword(request.getUsername(), request.getPassword());
+        String password = MD5HashPassword(request.getPassword());
+        User user = userDAO.getUserByUsernameAndPassword(request.getUsername(), password);
         if (user == null) throw new AuthenticationException("\nIncorrect username or password :(");
         if(user.getRole_id().equals("400")) throw new RegistrationPendingException("\nAn Admin has not approved your registration :(");
         return new Principal(user.getUser_id(), user.getUsername(), user.getRole_id());
@@ -88,5 +97,33 @@ public class UserService {
 
     public void setRoleIdForUser(String username, String role_id) {
         userDAO.setRoleIdForUser(username, role_id);
+    }
+
+    private String MD5HashPassword(String password){
+        String generatedPassword = null;
+        try
+        {
+            // Create MessageDigest instance for MD5
+            MessageDigest md = MessageDigest.getInstance("MD5");
+
+            // Add password bytes to digest
+            md.update(password.getBytes());
+
+            // Get the hash's bytes
+            byte[] bytes = md.digest();
+
+            // This bytes[] has bytes in decimal format. Convert it to hexadecimal format
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < bytes.length; i++) {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+            }
+
+            // Get complete hashed password in hex format
+            generatedPassword = sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        return generatedPassword;
     }
 }

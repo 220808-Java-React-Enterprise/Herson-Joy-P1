@@ -243,4 +243,16 @@ public class ReimbursementDAO implements CrudDAO<Reimbursement> {
             throw new InvalidSQLException("An error occurred when tyring to save to the database.");
         }
     }
+
+    public boolean isReimbursementPending(String reimb_id) {
+        try (Connection con = ConnectionFactory.getInstance().getConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT * from ers_reimbursements WHERE reimb_id = ? AND status_id = 100");
+            ps.setString(1, reimb_id);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new InvalidSQLException("An error occurred when tyring to save to the database.");
+        }
+    }
 }

@@ -130,4 +130,8 @@ public class ReimbursementService {
         }
         reimbursementDAO.setTypeForReimbursement(reimb_id, type_id);
     }
+
+    public boolean isReimbursementPending(String reimb_id) {
+        return reimbursementDAO.isReimbursementPending(reimb_id);
+    }
 }
