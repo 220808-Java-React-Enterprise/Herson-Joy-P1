@@ -99,7 +99,7 @@ public class UserService {
         userDAO.setRoleIdForUser(username, role_id);
     }
 
-    private String MD5HashPassword(String password){
+    public String MD5HashPassword(String password){
         String generatedPassword = null;
         try
         {

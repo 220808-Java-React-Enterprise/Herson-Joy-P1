@@ -1,9 +1,5 @@
 package com.revature.P1.dtos.requests;
 
-import jdk.nashorn.internal.runtime.regexp.joni.ast.StringNode;
-
-import java.time.LocalDateTime;
-
 public class ReimbursementRequest {
     private String author_id;
     private String type;
