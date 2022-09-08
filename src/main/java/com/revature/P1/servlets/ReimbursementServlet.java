@@ -9,6 +9,7 @@ import com.revature.P1.services.TokenService;
 import com.revature.P1.services.UserService;
 import com.revature.P1.utils.custom_exceptions.AuthenticationException;
 import com.revature.P1.utils.custom_exceptions.InvalidRequestException;
+import com.revature.P1.utils.custom_exceptions.InvalidSQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOError;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 public class ReimbursementServlet extends HttpServlet {
@@ -52,10 +54,10 @@ public class ReimbursementServlet extends HttpServlet {
 
         } catch (InvalidRequestException e){
             resp.setStatus(404);
-        } catch (AuthenticationException e){
+        } catch (AuthenticationException | NullPointerException e){
             resp.setStatus(401);
-        } catch (NullPointerException e){
-            resp.setStatus(401);
+        } catch (InvalidSQLException e){
+            resp.setStatus(400);
         }
     }
 
